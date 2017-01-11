@@ -1,0 +1,13 @@
+[debug] ----------------------------------------------------------------------
+[debug] Command:      /home/rickyandi/Videos/node-v7.0.0-linux-x64/bin/node /home/rickyandi/Videos/node-v7.0.0-linux-x64/bin/firebase serve
+[debug] CLI Version:  3.2.1
+[debug] Platform:     linux
+[debug] Node Version: v7.0.0
+[debug] Time:         Fri Jan 06 2017 13:17:29 GMT+0700 (WIB)
+[debug] ----------------------------------------------------------------------
+[debug] 
+[info] Starting Firebase development server...
+[info] 
+[info] Project Directory: /home/rickyandi/Documents/belajar/firebase
+[info] 
+[info] Server listening at: http://localhost:5000

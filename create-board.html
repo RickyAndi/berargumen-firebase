@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
+	<link rel="stylesheet" href="styles/create-board.css">
+	<link href="bower_components/summernote/dist/summernote.css" rel="stylesheet">
+</head>
+<body>
+	<div id="app">
+		<nav class="navbar navbar-inverse navbar-fixed-top">
+		    <div class="container">
+		       	<div class="navbar-header">
+		        	<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+		           		<span class="sr-only">Toggle navigation</span>
+		           		<span class="icon-bar"></span>
+		           		<span class="icon-bar"></span>
+		           		<span class="icon-bar"></span>
+		        	</button>
+		        	<a class="navbar-brand" href="index.html">Berargumen</a>
+		       	</div>
+		       	<div id="navbar" class="navbar-collapse collapse">
+		         	<ul class="nav navbar-nav navbar-right">
+		         		<li v-cloak v-if="user != null" >
+		         			<button @click="openModalToCreateContenttion()" class="btn btn-primary navbar-btn">Buat Contention</button>
+		         		</li>
+		         		<li v-cloak v-if="user != null" >
+		         			<button class="btn btn-info navbar-btn">My Boards</button>
+		         		</li>
+			        	<li v-cloak v-if="user != null"  class="dropdown">
+    	                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+    	                        <span class="glyphicon glyphicon-user"></span> 
+    	                        <strong>Profile</strong>
+    	                        <span class="glyphicon glyphicon-chevron-down"></span>
+    	                    </a>
+    	                    <ul class="dropdown-menu">
+    	                        <li>
+    	                            <div class="navbar-login">
+    	                                <div class="row">
+    	                                    <div class="col-lg-4">
+    	                                    	<img class="img-thumbnail" :src="user.photoURL" alt="Chania">
+    	                                    </div>
+    	                                    <div class="col-lg-8">
+    	                                        <p class="text-left"><strong>{{ user.displayName }}</strong></p>
+    	                                        <p class="text-left small">{{ user.email }}</p>
+    	                                    </div>
+    	                                </div>
+    	                            </div>
+    	                        </li>
+    	                        <li class="divider"></li>
+    	                        <li>
+    	                            <div class="navbar-login navbar-login-session">
+    	                                <div class="row">
+    	                                    <div class="col-lg-12">
+    	                                        <p>
+    	                                           <button @click="logout" class="btn btn-danger btn-block btn-sm">Keluar</button>
+    	                                        </p>
+    	                                    </div>
+    	                                </div>
+    	                            </div>
+    	                        </li>
+    	                    </ul>
+			        	</li>
+		         	</ul>
+		       	</div>
+		    </div>
+		</nav>
+		
+		<div class="modal fade bs-example-modal-lg" id="create-argument-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+			<div class="modal-dialog modal-lg" role="document">
+		    	<div class="modal-content">
+		      		<div class="modal-header">
+		      			<h4 v-if="status == 'create-contention'">Buat Argumen</h4>
+		      			<h4 v-if="status == 'create-objection'">Buat Bantahan</h4>
+		      			<h4 v-if="status == 'create-reason'">Buat Dukungan</h4>
+		      			<h4 v-if="status == 'edit-argument'">Rubah Argumen</h4>
+		      		</div>
+		      		<div class="modal-body">
+		      			<div class="form-group">
+		      				<label for="">Title</label>
+		      				<input v-model="forms.createArgument.title" type="text" class="form-control">
+		      			</div>
+		      			<div class="form-group">
+		      				<label for="">Content</label>
+		      				<div style="height:300px;" id="content-editor"></div>
+		      			</div>
+		      			<div class="form-group">
+		      				<button @click="createArgument($event)" class="btn btn-success">Kirim</button>
+		      				<button @click="closeCreateArgumentModal()" class="btn btn-danger">Tutup</button>
+		      			</div>
+		      		</div>
+		    	</div>
+		  	</div>
+		</div>
+		
+		<div class="modal fade" id="remove-argument-modal-notification" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+		 	<div class="modal-dialog modal-md" role="document">
+		    	<div class="modal-content">
+		      		<div class="modal-header">
+		      			<h4>Apakah anda akan menghapus argumen ini ?</h4>
+		      		</div>
+		      		<div class="modal-body">
+		      			<div class="row">
+		      				<div class="col-md-6">
+		      				</div>
+		      				<div class="col-md-6">
+		      					<div class="pull-right">
+		      						<button @click="removeArgumentByIndex()" class="btn btn-danger">Ya</button>
+		      						<button @click="closeRemoveArgumentConfirmationModal()" class="btn btn-success">Tidak</button>
+		      					</div>
+		      				</div>
+		      			</div>
+		      		</div>
+		    	</div>
+		  	</div>
+		</div>
+
+		<argumen-panel v-for="(argument, index) in arguments" 
+			:uid = "argument.uid"
+			:index="index" 
+			:type="argument.type" 
+			:title="argument.title" 
+			:message="argument.message"
+			:right="argument.right"
+			:top="argument.top"
+			v-on:change-position="changePositionByIndex" 
+		>
+		</argumen-panel>
+
+	</div>
+	
+	<script type="text/x-template" id="argumen-panel-template">
+		<div :id="uid" v-bind:style="{width: '180px', left: right + 'px', top : top + 'px'}" class="panel" v-bind:class="{ 'panel-default': type == 'contention' || type == null, 'panel-success': type == 'support', 'panel-danger': type == 'rebuttal'}">
+			<div class="panel-heading">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="pull-right">
+							<div class="btn-group btn-group-xs">
+								<button title="Rubah Argumen" @click="editArgument()" class="btn btn-default btn-xs"><small><i class="glyphicon glyphicon-pencil"></i></small></button>
+								<button title="Buat Support" class="btn btn-success btn-xs" @click="createSupport()"><small><i class="glyphicon glyphicon-ok-circle"></i></small></button>
+								<button title="Buat Bantahan" class="btn btn-warning btn-xs" @click="createRebuttal()"><small><i class="glyphicon glyphicon-remove-circle"></i></small></button>
+								<button title="Hapus Argumen" class="btn btn-danger btn-xs" @click="remove()"><small><i class="glyphicon glyphicon-remove"></i></small></button>
+								<button title="Pindah Posisi" class="btn btn-info btn-xs" @click="changePosition()"><small><i class="glyphicon glyphicon-move"></i></small></button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="panel-body" @click="viewArgument()">
+				{{ title }}
+			</div>
+			<div class="panel-footer">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="pull-right">
+							0 <button class="btn btn-success btn-xs"><small><i class="glyphicon glyphicon-thumbs-up"></i></small></button>
+							0 <button class="btn btn-danger btn-xs"><small><i class="glyphicon glyphicon-thumbs-down"></i></small></button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</script>
+
+	<script src="bower_components/firebase/firebase.js"></script>
+	<script src="bower_components/jquery/dist/jquery.js"></script>
+	<script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+	<script src="bower_components/vue/dist/vue.js"></script>
+	<script src="bower_components/store-js/store.js"></script>
+	<script src="bower_components/jsplumb/dist/js/jsPlumb-2.2.8.js"></script>
+	<script src="bower_components/summernote/dist/summernote.js"></script>
+	
+	<script src="models/user.js"></script>
+	<script src="models/argument.js"></script>
+	
+	<script src="scripts/create-board.js"></script>
+</body>
+</html>

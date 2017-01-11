@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<p id="email"="username"></p>
+	<button id="logout">Logout</button>
+	<script src="bower_components/firebase/firebase.js"></script>
+	<script src="bower_components/jquery/dist/jquery.js"></script>
+	<script>
+	 	var config = {
+		    apiKey: "AIzaSyCoeRfZ6Ds3pZBFFdAyhxCd74ZvA1wLdGA",
+		    authDomain: "test-975e4.firebaseapp.com",
+		    databaseURL: "https://test-975e4.firebaseio.com",
+		    storageBucket: "test-975e4.appspot.com",
+		    messagingSenderId: "690986657049"
+	  	};
+	  	
+	  	$(document).ready(function() {
+	  		firebase.initializeApp(config);
+			var logoutButton = $('#logout');
+	  		var auth = firebase.auth();
+
+	  		auth.onAuthStateChanged(function(user) {
+	  			console.log(user)
+	  			if(user != null) {
+	  				$('#email').html(user.email);
+	  			} else {
+	  				window.location.href = 'index.html';
+	  			}
+			})
+
+	  		logoutButton.on('click', function() {
+	  			auth.signOut();
+	  		})
+	  	})
+	  	
+	</script>
+</body>
+</html>

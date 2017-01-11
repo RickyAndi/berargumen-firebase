@@ -1,0 +1,28 @@
+{
+  "name": "firebase",
+  "authors": [
+    "ricky.andika <ricky.andika@javan.co.id>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^3.1.1",
+    "vue": "^2.1.8",
+    "bootstrap": "^3.3.7",
+    "firebase": "^3.6.4",
+    "store-js": "^1.3.20",
+    "jsplumb": "^2.2.8",
+    "ramda": "^0.23.0",
+    "quill": "^1.1.9",
+    "summernote": "^0.8.2"
+  }
+}
